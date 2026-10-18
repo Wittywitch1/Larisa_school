@@ -13,7 +13,7 @@ public class DetailsModel : PageModel
         _context = context;
     }
 
-    public Books Books { get; set; } = default!;
+    public Book Books { get; set; } = default!;
 
     public async Task<IActionResult> OnGetAsync(int? id)
     {

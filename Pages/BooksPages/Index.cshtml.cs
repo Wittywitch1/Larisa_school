@@ -14,10 +14,12 @@ public class IndexModel : PageModel
         _context = context;
     }
 
-    public IList<Books> Books { get; set; } = default!;
+    public IList<Book> Books { get; set; } = default!;
 
     public async Task OnGetAsync()
     {
-        Books = await _context.Books.ToListAsync();
+        Books = await _context.Books
+            .Include(b => b.Publisher)
+            .ToListAsync();
     }
 }

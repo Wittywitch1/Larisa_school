@@ -15,7 +15,7 @@ public class DeleteModel : PageModel
     }
 
     [BindProperty]
-    public Books Books { get; set; } = default!;
+    public Book Books { get; set; } = default!;
 
     public async Task<IActionResult> OnGetAsync(int? id)
     {

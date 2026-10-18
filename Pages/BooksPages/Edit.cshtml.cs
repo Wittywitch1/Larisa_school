@@ -1,7 +1,8 @@
+using Androne_Larisa_lab2.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Androne_Larisa_lab2.Models;
 
 namespace Androne_Larisa_lab2.Pages.BooksPages;
 
@@ -15,7 +16,7 @@ public class EditModel : PageModel
     }
 
     [BindProperty]
-    public Books Books { get; set; } = default!;
+    public Book Books { get; set; } = default!;
 
     public async Task<IActionResult> OnGetAsync(int? id)
     {
@@ -30,6 +31,14 @@ public class EditModel : PageModel
             return NotFound();
         }
         Books = books;
+        ViewData["PublisherID"] = new SelectList(_context.Set<Publisher>(), "ID",
+"PublisherName");
+        ViewData["AuthorID"] = new SelectList(
+    _context.Authors,
+    "ID",
+    "FirstName",
+    "LastName"
+);
         return Page();
     }
 

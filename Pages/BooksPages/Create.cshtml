@@ -19,9 +19,18 @@
                 <span asp-validation-for="Books.Title" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <label asp-for="Books.Author" class="control-label"></label>
-                <input asp-for="Books.Author" class="form-control" />
-                <span asp-validation-for="Books.Author" class="text-danger"></span>
+                <label asp-for="Books.AuthorID" class="control-label">
+                    Author Name
+                </label>
+
+                <select asp-for="Books.AuthorID"
+                        class="form-control"
+                        asp-items="ViewBag.AuthorID">
+                    <option value="">-- Select Author --</option>
+                </select>
+
+                <span asp-validation-for="Books.AuthorID"
+                      class="text-danger"></span>
             </div>
             <div class="form-group">
                 <label asp-for="Books.Price" class="control-label"></label>
@@ -32,6 +41,12 @@
                 <label asp-for="Books.PublishingDate" class="control-label"></label>
                 <input asp-for="Books.PublishingDate" class="form-control" type="date" />
                 <span asp-validation-for="Books.PublishingDate" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Books.PublisherID" class="control-label">Publisher Name</label>
+                <select asp-for="Books.PublisherID" class="form-control" asp-items="ViewBag.PublisherID">
+                </select>
+                <span asp-validation-for="Books.PublisherID" class="text-danger"></span>
             </div>
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
