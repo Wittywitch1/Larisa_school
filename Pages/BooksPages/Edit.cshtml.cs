@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Androne_Larisa_lab2.Pages.BooksPages;
 
-public class EditModel : PageModel
+public class EditModel : BookCategoriesPageModel
 {
     private readonly Androne_Larisa_lab2Context _context;
 
