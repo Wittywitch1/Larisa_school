@@ -10,7 +10,7 @@ namespace Androne_Larisa_lab2.Models
         [Display(Name = "Book Title")]
         public string Title { get; set; }
 
-        public decimal Price { get; set; }
+       
 
         public DateTime PublishingDate { get; set; }
 
@@ -19,6 +19,10 @@ namespace Androne_Larisa_lab2.Models
 
         public int? AuthorID { get; set; }
         public Author? Author{ get; set; }
+
+        [Column(TypeName = "decimal(6, 2)")]
+        public decimal Price { get; set; }
+
         public ICollection<BookCategory>? BookCategories { get; set; }
     }
 }

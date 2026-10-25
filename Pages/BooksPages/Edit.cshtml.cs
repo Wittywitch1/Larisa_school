@@ -1,79 +1,87 @@
 using Androne_Larisa_lab2.Models;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 
-namespace Androne_Larisa_lab2.Pages.BooksPages;
-
-public class EditModel : BookCategoriesPageModel
+namespace Androne_Larisa_lab2.Pages.BooksPages
 {
-    private readonly Androne_Larisa_lab2Context _context;
-
-    public EditModel(Androne_Larisa_lab2Context context)
+    public class EditModel : BookCategoriesPageModel
     {
-        _context = context;
-    }
+        private readonly Androne_Larisa_lab2Context _context;
 
-    [BindProperty]
-    public Book Books { get; set; } = default!;
-
-    public async Task<IActionResult> OnGetAsync(int? id)
-    {
-        if (id is null)
+        public EditModel(Androne_Larisa_lab2Context context)
         {
-            return NotFound();
+            _context = context;
         }
 
-        var books = await _context.Books.FirstOrDefaultAsync(m => m.ID == id);
-        if (books is null)
-        {
-            return NotFound();
-        }
-        Books = books;
-        ViewData["PublisherID"] = new SelectList(_context.Set<Publisher>(), "ID",
-"PublisherName");
-        ViewData["AuthorID"] = new SelectList(
-    _context.Authors,
-    "ID",
-    "FirstName",
-    "LastName"
-);
-        return Page();
-    }
+        [BindProperty]
+        public Book Book { get; set; } = default!;
 
-    // To protect from overposting attacks, enable the specific properties you want to bind to.
-    // For more details, see https://aka.ms/RazorPagesCRUD.
-    public async Task<IActionResult> OnPostAsync()
-    {
-        if (!ModelState.IsValid)
+        public async Task<IActionResult> OnGetAsync(int? id)
         {
-            return Page();
-        }
-
-        _context.Attach(Books).State = EntityState.Modified;
-
-        try
-        {
-            await _context.SaveChangesAsync();
-        }
-        catch (DbUpdateConcurrencyException)
-        {
-            if (!BooksExists(Books.ID))
+            if (id == null)
             {
                 return NotFound();
             }
-            else
+
+            Book = await _context.Books
+                .Include(b => b.Publisher)
+                .Include(b => b.Author)
+                .Include(b => b.BookCategories).ThenInclude(b => b.Category)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(m => m.ID == id);
+
+            if (Book == null)
             {
-                throw;
+                return NotFound();
             }
+
+            //apelam PopulateAssignedCategoryData pentru a obtine informatiile necesare checkbox-urilor
+            PopulateAssignedCategoryData(_context, Book);
+
+            var authorList = _context.Authors.Select(x => new
+            {
+                x.ID,
+                FullName = x.LastName + " " + x.FirstName
+            });
+            ViewData["AuthorID"] = new SelectList(authorList, "ID", "FullName");
+            ViewData["PublisherID"] = new SelectList(_context.Publisher, "ID", "PublisherName");
+            return Page();
         }
 
-        return RedirectToPage("./Index");
-    }
+        public async Task<IActionResult> OnPostAsync(int? id, string[] selectedCategories)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
 
-    private bool BooksExists(int id)
-    {
-        return _context.Books.Any(e => e.ID == id);
+            var bookToUpdate = await _context.Books
+                .Include(i => i.Publisher)
+                .Include(i => i.Author)
+                .Include(i => i.BookCategories).ThenInclude(i => i.Category)
+                .FirstOrDefaultAsync(s => s.ID == id);
+
+            if (bookToUpdate == null)
+            {
+                return NotFound();
+            }
+
+            if (await TryUpdateModelAsync<Book>(
+                bookToUpdate,
+                "Book",
+                i => i.Title, i => i.AuthorID,
+                i => i.Price, i => i.PublishingDate, i => i.PublisherID))
+            {
+                UpdateBookCategories(_context, selectedCategories, bookToUpdate);
+                await _context.SaveChangesAsync();
+                return RedirectToPage("./Index");
+            }
+
+            //Apelam UpdateBookCategories pentru a aplica informatiile din checkboxuri la cartea editata
+            UpdateBookCategories(_context, selectedCategories, bookToUpdate);
+            PopulateAssignedCategoryData(_context, bookToUpdate);
+            return Page();
+        }
     }
 }

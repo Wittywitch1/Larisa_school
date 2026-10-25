@@ -1,37 +1,43 @@
+using Androne_Larisa_lab2.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
-using Androne_Larisa_lab2.Models;
 
-namespace Androne_Larisa_lab2.Pages.BooksPages;
-
-public class DetailsModel : PageModel
+namespace Androne_Larisa_lab2.Pages.BooksPages
 {
-    private readonly Androne_Larisa_lab2Context _context;
-    public DetailsModel(Androne_Larisa_lab2Context context)
+    public class DetailsModel : PageModel
     {
-        _context = context;
-    }
+        private readonly Androne_Larisa_lab2Context _context;
 
-    public Book Books { get; set; } = default!;
-
-    public async Task<IActionResult> OnGetAsync(int? id)
-    {
-        if (id is null)
+        public DetailsModel(Androne_Larisa_lab2Context context)
         {
-            return NotFound();
+            _context = context;
         }
 
-        var books = await _context.Books.FirstOrDefaultAsync(m => m.ID == id);
-        if (books is null)
-        {
-            return NotFound();
-        }
-        else
-        {
-            Books = books;
-        }
+        public Book Book { get; set; } = default!;
 
-        return Page();
+        public async Task<IActionResult> OnGetAsync(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+
+            var book = await _context.Books
+                .Include(b => b.Author)
+                .Include(b => b.Publisher)
+                .Include(b => b.BookCategories)
+                    .ThenInclude(bc => bc.Category)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(m => m.ID == id);
+
+            if (book == null)
+            {
+                return NotFound();
+            }
+
+            Book = book;
+            return Page();
+        }
     }
 }
