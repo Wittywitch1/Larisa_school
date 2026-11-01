@@ -136,7 +136,7 @@ namespace Androne_Larisa_lab2.Migrations
             modelBuilder.Entity("Androne_Larisa_lab2.Models.Book", b =>
                 {
                     b.HasOne("Androne_Larisa_lab2.Models.Author", "Author")
-                        .WithMany()
+                        .WithMany("Books")
                         .HasForeignKey("AuthorID");
 
                     b.HasOne("Androne_Larisa_lab2.Models.Publisher", "Publisher")
@@ -165,6 +165,11 @@ namespace Androne_Larisa_lab2.Migrations
                     b.Navigation("Book");
 
                     b.Navigation("Category");
+                });
+
+            modelBuilder.Entity("Androne_Larisa_lab2.Models.Author", b =>
+                {
+                    b.Navigation("Books");
                 });
 
             modelBuilder.Entity("Androne_Larisa_lab2.Models.Book", b =>
