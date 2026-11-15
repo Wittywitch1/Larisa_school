@@ -1,9 +1,11 @@
+﻿using Microsoft.AspNetCore.Authorization;
 using Androne_Larisa_lab2.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace Androne_Larisa_lab2.Pages.BooksPages
 {
+    [Authorize(Roles = "Admin")]
     public class CreateModel : BookCategoriesPageModel
     {
         private readonly Androne_Larisa_lab2Context _context;

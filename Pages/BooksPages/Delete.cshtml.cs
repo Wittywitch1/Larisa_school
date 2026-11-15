@@ -1,3 +1,4 @@
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
@@ -5,6 +6,7 @@ using Androne_Larisa_lab2.Models;
 
 namespace Androne_Larisa_lab2.Pages.BooksPages;
 
+[Authorize(Roles = "Admin")]
 public class DeleteModel : PageModel
 {
     private readonly Androne_Larisa_lab2Context _context;

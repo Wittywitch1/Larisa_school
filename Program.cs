@@ -1,12 +1,25 @@
-using Androne_Larisa_lab2;
+﻿using Androne_Larisa_lab2;
 using Androne_Larisa_lab2.Data;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("AdminPolicy", policy => policy.RequireRole("Admin"));
+});
+
 // Add services to the container.
-builder.Services.AddRazorPages();
+builder.Services.AddRazorPages(options =>
+{
+    options.Conventions.AuthorizeFolder("/BooksPages");
+    options.Conventions.AllowAnonymousToPage("/BooksPages/Index");
+    options.Conventions.AllowAnonymousToPage("/BooksPages/Details");
+    options.Conventions.AuthorizeFolder("/MemberPages", "AdminPolicy");
+    options.Conventions.AuthorizeFolder("/PublisherPages", "AdminPolicy");
+    options.Conventions.AuthorizeFolder("/CategoryPages", "AdminPolicy");
+});
 
 builder.Services.AddDbContext<Androne_Larisa_lab2Context>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("Androne_Larisa_lab2Context") ?? throw new InvalidOperationException("Connection string 'Androne_Larisa_lab2Context' not found.")));
@@ -16,6 +29,7 @@ builder.Services.AddDbContext<LibraryIdentityContext>(options =>
 
 builder.Services.AddDefaultIdentity<IdentityUser>(options =>
     options.SignIn.RequireConfirmedAccount = true)
+    .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<LibraryIdentityContext>();
 
 var app = builder.Build();

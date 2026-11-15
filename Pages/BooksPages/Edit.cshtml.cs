@@ -1,3 +1,4 @@
+﻿using Microsoft.AspNetCore.Authorization;
 using Androne_Larisa_lab2.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -5,6 +6,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Androne_Larisa_lab2.Pages.BooksPages
 {
+    [Authorize(Roles = "Admin")]
     public class EditModel : BookCategoriesPageModel
     {
         private readonly Androne_Larisa_lab2Context _context;
