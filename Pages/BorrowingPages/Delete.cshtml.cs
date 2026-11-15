@@ -1,4 +1,4 @@
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.EntityFrameworkCore;
 using Androne_Larisa_lab2.Models;
@@ -25,7 +25,11 @@ public class DeleteModel : PageModel
             return NotFound();
         }
 
-        var borrowing = await _context.Borrowing.FirstOrDefaultAsync(m => m.ID == id);
+        var borrowing = await _context.Borrowing
+            .Include(b => b.Member)
+            .Include(b => b.Book)
+                .ThenInclude(b => b.Author)
+            .FirstOrDefaultAsync(m => m.ID == id);
         if (borrowing is null)
         {
             return NotFound();

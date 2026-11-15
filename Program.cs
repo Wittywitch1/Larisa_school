@@ -1,12 +1,22 @@
-using Microsoft.EntityFrameworkCore;
 using Androne_Larisa_lab2;
-var builder = WebApplication.CreateBuilder(args);
-var connectionString = builder.Configuration.GetConnectionString("Androne_Larisa_lab2Context") ?? throw new InvalidOperationException("Connection string 'Androne_Larisa_lab2Context' not found.");
+using Androne_Larisa_lab2.Data;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
-builder.Services.AddDbContext<Androne_Larisa_lab2Context>(options => options.UseSqlServer(connectionString));
+var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorPages();
+
+builder.Services.AddDbContext<Androne_Larisa_lab2Context>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("Androne_Larisa_lab2Context") ?? throw new InvalidOperationException("Connection string 'Androne_Larisa_lab2Context' not found.")));
+
+builder.Services.AddDbContext<LibraryIdentityContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("Androne_Larisa_lab2Context") ?? throw new InvalidOperationException("Connection string 'Androne_Larisa_lab2Context' not found.")));
+
+builder.Services.AddDefaultIdentity<IdentityUser>(options =>
+    options.SignIn.RequireConfirmedAccount = true)
+    .AddEntityFrameworkStores<LibraryIdentityContext>();
 
 var app = builder.Build();
 
@@ -22,6 +32,7 @@ app.UseHttpsRedirection();
 
 app.UseRouting();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapStaticAssets();

@@ -1,5 +1,6 @@
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Androne_Larisa_lab2.Models;
 using Androne_Larisa_lab2;
@@ -31,6 +32,17 @@ public class EditModel : PageModel
             return NotFound();
         }
         Borrowing = borrowing;
+
+        var bookList = _context.Books
+            .Include(b => b.Author)
+            .Select(x => new
+            {
+                x.ID,
+                BookFullName = x.Title + " - " + x.Author.LastName + " " + x.Author.FirstName
+            });
+
+        ViewData["BookID"] = new SelectList(bookList, "ID", "BookFullName");
+        ViewData["MemberID"] = new SelectList(_context.Member, "ID", "FullName");
         return Page();
     }
 
